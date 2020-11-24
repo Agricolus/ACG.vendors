@@ -100,7 +100,7 @@ namespace ADAPT.JohnDeere.Controllers
             {
                 return BadRequest();
             }
-            var responseData = JObject.Parse(await usersresponse.Content.ReadAsStringAsync(6));
+            var responseData = JObject.Parse(await usersresponse.Content.ReadAsStringAsync());
 
             await mediator.Send(new CreateOrUpdateUserRegistration() {
                 ExternalUserId = responseData.Value<string>("accountName"),
