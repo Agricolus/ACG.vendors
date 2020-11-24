@@ -7,7 +7,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using ADAPT.JohnDeere.core.CQRS.Command;
+using ADAPT.JohnDeere.core.CQRS.Query;
 using ADAPT.JohnDeere.core.Dto;
+using ADAPT.JohnDeere.core.Dto.JohnDeereApiResponse;
+using ADAPT.JohnDeere.core.Service;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -22,55 +25,36 @@ namespace ADAPT.JohnDeere.Controllers
     {
         private readonly IConfiguration configuration;
         private readonly IMediator mediator;
+        private readonly IJDApiClient apiclient;
 
         // private readonly IModuleConfiguration moduleConfiguration;
 
         // public AuthenticationController(IConfiguration configuration, IModuleConfiguration moduleConfiguration)
-        public AuthenticationController(IConfiguration configuration, IMediator mediator)
+        public AuthenticationController(IConfiguration configuration, IMediator mediator, IJDApiClient apiclient)
         {
             this.configuration = configuration;
             // this.moduleConfiguration = moduleConfiguration;
             this.mediator = mediator;
+            this.apiclient = apiclient;
         }
 
         [HttpGet("cb")]
         public async Task<IActionResult> AuthCallbackMediation(string code, string state)
         {
-            var authconfig = configuration.GetSection("johndeere:auth");
-            var appid = authconfig.GetValue<string>("appId");
-            var appsecret = authconfig.GetValue<string>("appSecret");
+            var accessToken = await mediator.Send(new GetUserAccessToken() { Code = code });
 
-            var tokenUrl = authconfig.GetValue<string>("accessTokenUrl");
-            var redirectUrl = authconfig.GetValue<string>("cbUrl");
-            var apiUrl = authconfig.GetValue<string>("apiUrl");
-
-            var client = new HttpClient();
-
-            var tokenRequestParameters = $"grant_type=authorization_code&code={code}&redirect_uri={redirectUrl}";
-            var requestData = new StringContent(tokenRequestParameters, Encoding.UTF8, "application/x-www-form-urlencoded");
-            var basicauthtoken = Encoding.ASCII.GetBytes($"{appid}:{appsecret}");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(basicauthtoken));
-
-
-            var response = await client.PostAsync(tokenUrl, requestData);
-            if (response.StatusCode == HttpStatusCode.OK)
+            if (accessToken != null)
             {
-                var tokenResponseText = await response.Content.ReadAsStringAsync();
+                var orgresponseobj = await apiclient.Call<Response<Organization>>("/organizations", accessToken.AccessToken);
+                if (orgresponseobj == null)
+                    return BadRequest("unable to retrieve user organizations");
 
-                var tokenObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(tokenResponseText);
-                var otherclient = new HttpClient();
-                var jdapi = $"{apiUrl}/organizations";
-                var bearerauthtoke = tokenObject["access_token"];
-                otherclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerauthtoke);
-                otherclient.DefaultRequestHeaders.Accept.Clear();
-                otherclient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.deere.axiom.v3+json"));
-                var orgresponse = await otherclient.GetAsync(jdapi);
-                var orgresponsetext = await orgresponse.Content.ReadAsStringAsync();
-                var orgresponseobj = JObject.Parse(orgresponsetext);
-                var connectionslink = orgresponseobj.SelectTokens("$..links[?(@rel=='connections')].uri").FirstOrDefault();
+                var connectionslink = orgresponseobj.Values.SelectMany(o => o.Links.Where(l => l.Rel == "connections").Select(l => l.Uri)).FirstOrDefault();
                 if (connectionslink != null)
-                    return Redirect(connectionslink.Value<string>());
+                    return Redirect(connectionslink);
+
                 var urlsep = state.IndexOf('?') >= 0 ? "&" : "?";
+                var tokenResponseText = JsonConvert.SerializeObject(accessToken);
                 return new ContentResult
                 {
                     ContentType = "text/html",
@@ -85,25 +69,28 @@ namespace ADAPT.JohnDeere.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] UserToken userdata)
         {
-            var authconfig = configuration.GetSection("johndeere:auth");
-            var apiUrl = authconfig.GetValue<string>("apiUrl");
+            // var authconfig = configuration.GetSection("johndeere:auth");
+            // var apiUrl = authconfig.GetValue<string>("apiUrl");
 
-            var client = new HttpClient();
+            // var client = new HttpClient();
 
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userdata.AccessToken);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.deere.axiom.v3+json"));
+            // client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userdata.AccessToken);
+            // client.DefaultRequestHeaders.Accept.Clear();
+            // client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.deere.axiom.v3+json"));
 
-            var usersresponse = await client.GetAsync($"{apiUrl}/users/@currentUser");
+            // var usersresponse = await client.GetAsync($"{apiUrl}/users/@currentUser");
 
-            if (usersresponse.StatusCode != HttpStatusCode.OK)
+            var usersresponse = await this.apiclient.Call<User>("/users/@currentUser", userdata.AccessToken);
+
+            if (usersresponse == null)
             {
                 return BadRequest();
             }
-            var responseData = JObject.Parse(await usersresponse.Content.ReadAsStringAsync());
-
-            await mediator.Send(new CreateOrUpdateUserRegistration() {
-                ExternalUserId = responseData.Value<string>("accountName"),
+            // var responseData = JObject.Parse(await usersresponse.Content.ReadAsStringAsync());
+            var accountName = usersresponse.AccountName;
+            await mediator.Send(new CreateOrUpdateUserRegistration()
+            {
+                ExternalUserId = accountName,
                 UserId = userdata.UserId,
                 AccessToken = userdata.AccessToken,
                 RefreshToken = userdata.RefreshToken,
@@ -113,5 +100,27 @@ namespace ADAPT.JohnDeere.Controllers
             return Ok();
 
         }
+
+        [HttpGet("token/{userId}")]
+        public async Task<IActionResult> CheckUserToken(string userId)
+        {
+            var userToken = await mediator.Send(new GetUserToken() { UserId = userId });
+            var usersresponse = await this.apiclient.Call<User>("/users/@currentUser", userToken.AccessToken);
+            if (usersresponse == null)
+            {
+                userToken = await mediator.Send(new RefreshUserAccessToken() { RefreshToken = userToken.RefreshToken });
+                if (userToken == null)
+                    return Ok(false);
+            }
+            await mediator.Send(new CreateOrUpdateUserRegistration()
+            {
+                UserId = userId,
+                AccessToken = userToken.AccessToken,
+                RefreshToken = userToken.RefreshToken,
+                ExpiresIn = userToken.ExpiresIn
+            });
+            return Ok(true);
+        }
+
     }
 }

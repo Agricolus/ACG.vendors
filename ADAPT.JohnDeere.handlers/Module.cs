@@ -8,6 +8,8 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using ADAPT.JohnDeere.handlers;
+using ADAPT.JohnDeere.core.Service;
+using ADAPT.JohnDeere.handlers.Service;
 
 namespace ADAPT.JohnDeere.api
 {
@@ -22,6 +24,7 @@ namespace ADAPT.JohnDeere.api
             }
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddScoped<IJDApiClient, JDApiClient>();
         }
 
     }

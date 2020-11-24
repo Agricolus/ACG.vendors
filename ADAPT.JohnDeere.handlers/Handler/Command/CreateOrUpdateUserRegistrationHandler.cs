@@ -24,22 +24,32 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
         public async Task<bool> Handle(CreateOrUpdateUserRegistration request, CancellationToken cancellationToken)
         {
             var recordedUserToken = await (from um in db.UsersTokens where um.Id == request.UserId select um).FirstOrDefaultAsync();
-            if (recordedUserToken != null) {
-                var expired = (DateTime.UtcNow - recordedUserToken.RegistrationTime).TotalSeconds > recordedUserToken.ExpiresIn ? true : false;
-                if (expired) return false;
-            }
-
-            recordedUserToken = new UserToken()
+            if (recordedUserToken != null)
             {
-                ExternalId = request.ExternalUserId,
-                Id = request.UserId,
-                AccessToken = request.AccessToken,
-                RefreshToken = request.RefreshToken,
-                ExpiresIn = request.ExpiresIn,
-                RegistrationTime = DateTime.UtcNow
-            };
-
-            db.UsersTokens.Add(recordedUserToken);
+                var expired = (DateTime.UtcNow - recordedUserToken.RegistrationTime).TotalSeconds > recordedUserToken.ExpiresIn ? true : false;
+                if (expired)
+                {
+                    // recordedUserToken.ExternalId = request.ExternalUserId;
+                    // recordedUserToken.Id = request.UserId;
+                    recordedUserToken.AccessToken = request.AccessToken;
+                    recordedUserToken.RefreshToken = request.RefreshToken;
+                    recordedUserToken.ExpiresIn = request.ExpiresIn;
+                    recordedUserToken.RegistrationTime = DateTime.UtcNow;
+                }
+            }
+            else
+            {
+                recordedUserToken = new UserToken()
+                {
+                    ExternalId = request.ExternalUserId,
+                    Id = request.UserId,
+                    AccessToken = request.AccessToken,
+                    RefreshToken = request.RefreshToken,
+                    ExpiresIn = request.ExpiresIn,
+                    RegistrationTime = DateTime.UtcNow
+                };
+                db.UsersTokens.Add(recordedUserToken);
+            }
             await db.SaveChangesAsync();
 
             return true;

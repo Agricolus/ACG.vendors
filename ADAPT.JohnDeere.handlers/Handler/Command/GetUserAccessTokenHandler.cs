@@ -8,31 +8,33 @@ using System.Threading.Tasks;
 using ADAPT.JohnDeere.core.CQRS.Command;
 using ADAPT.JohnDeere.core.Dto;
 using MediatR;
-using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace ADAPT.JohnDeere.handlers.Handler.Command
 {
-    public class RefreshUserAccessTokenHandler : IRequestHandler<RefreshUserAccessToken, UserToken>
+    public class GetUserAccessTokenHandler : IRequestHandler<GetUserAccessToken, AccessTokenResponse>
     {
         private readonly IConfiguration configuration;
 
-        public RefreshUserAccessTokenHandler(IConfiguration configuration)
+        public GetUserAccessTokenHandler(IConfiguration configuration)
         {
             this.configuration = configuration;
         }
 
-
-        public async Task<UserToken> Handle(RefreshUserAccessToken request, CancellationToken cancellationToken)
+        public async Task<AccessTokenResponse> Handle(GetUserAccessToken request, CancellationToken cancellationToken)
         {
             var authconfig = configuration.GetSection("johndeere:auth");
             var appid = authconfig.GetValue<string>("appId");
             var appsecret = authconfig.GetValue<string>("appSecret");
 
             var tokenUrl = authconfig.GetValue<string>("accessTokenUrl");
+            var redirectUrl = authconfig.GetValue<string>("cbUrl");
+            var apiUrl = authconfig.GetValue<string>("apiUrl");
+
             var client = new HttpClient();
 
-            var tokenRequestParameters = $"grant_type=refresh_token&refresh_token={request.RefreshToken}";
+            var tokenRequestParameters = $"grant_type=authorization_code&code={request.Code}&redirect_uri={redirectUrl}";
             var requestData = new StringContent(tokenRequestParameters, Encoding.UTF8, "application/x-www-form-urlencoded");
             var basicauthtoken = Encoding.ASCII.GetBytes($"{appid}:{appsecret}");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(basicauthtoken));
@@ -41,14 +43,11 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
             if (response.StatusCode == HttpStatusCode.OK)
             {
                 var tokenResponseText = await response.Content.ReadAsStringAsync();
-                JObject tokenObject = JObject.Parse(tokenResponseText);
-                return new UserToken()
-                {
-                    AccessToken = tokenObject.Value<string>("access_token"),
-                    ExpiresIn = tokenObject.Value<int>("expires_in"),
-                    RefreshToken = tokenObject.Value<string>("refresh_token")
-                };
+
+                var tokenObject = JsonConvert.DeserializeObject<AccessTokenResponse>(tokenResponseText);
+                return tokenObject;
             }
+
             return null;
         }
     }
