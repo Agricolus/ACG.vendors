@@ -4,6 +4,9 @@ using System.Composition;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO;
+using System.Reflection;
+using Microsoft.EntityFrameworkCore;
+using MediatR;
 
 namespace ADAPT.JohnDeere.api
 {
@@ -11,14 +14,9 @@ namespace ADAPT.JohnDeere.api
     {
         public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            // var builder = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
-            //     .AddJsonFile("modulesettings.json", optional: true, reloadOnChange: true)
-            //     .AddJsonFile($"modulesettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true);
-            // var moduleConfiguration = (IModuleConfiguration)builder.Build();
-            // services.AddSingleton<IModuleConfiguration>(moduleConfiguration);
+            var me = Assembly.GetExecutingAssembly();
+            me.GetName();
         }
 
     }
-
-    // public interface IModuleConfiguration : IConfiguration { }
 }

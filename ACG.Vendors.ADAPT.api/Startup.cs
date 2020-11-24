@@ -6,6 +6,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using System.IO;
 using ACG;
+using MediatR;
+using System.Reflection;
 
 namespace ACG
 {
@@ -47,6 +49,8 @@ namespace ACG
             Loader.Current.ConfigureServices(services, this.Configuration);
 
             services.AddControllers();
+
+            services.AddMediatR(Assembly.GetExecutingAssembly());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

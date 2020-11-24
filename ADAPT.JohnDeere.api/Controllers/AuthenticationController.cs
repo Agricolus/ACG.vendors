@@ -6,10 +6,11 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using ADAPT.JohnDeere.api;
+using ADAPT.JohnDeere.core.CQRS.Command;
+using ADAPT.JohnDeere.core.Dto;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -20,14 +21,16 @@ namespace ADAPT.JohnDeere.Controllers
     public class AuthenticationController : ControllerBase
     {
         private readonly IConfiguration configuration;
+        private readonly IMediator mediator;
 
         // private readonly IModuleConfiguration moduleConfiguration;
 
         // public AuthenticationController(IConfiguration configuration, IModuleConfiguration moduleConfiguration)
-        public AuthenticationController(IConfiguration configuration)
+        public AuthenticationController(IConfiguration configuration, IMediator mediator)
         {
             this.configuration = configuration;
             // this.moduleConfiguration = moduleConfiguration;
+            this.mediator = mediator;
         }
 
         [HttpGet("cb")]
@@ -39,7 +42,7 @@ namespace ADAPT.JohnDeere.Controllers
 
             var tokenUrl = authconfig.GetValue<string>("accessTokenUrl");
             var redirectUrl = authconfig.GetValue<string>("cbUrl");
-
+            var apiUrl = authconfig.GetValue<string>("apiUrl");
 
             var client = new HttpClient();
 
@@ -56,7 +59,7 @@ namespace ADAPT.JohnDeere.Controllers
 
                 var tokenObject = JsonConvert.DeserializeObject<Dictionary<string, string>>(tokenResponseText);
                 var otherclient = new HttpClient();
-                var jdapi = "https://sandboxapi.deere.com/platform/organizations";
+                var jdapi = $"{apiUrl}/organizations";
                 var bearerauthtoke = tokenObject["access_token"];
                 otherclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearerauthtoke);
                 otherclient.DefaultRequestHeaders.Accept.Clear();
@@ -67,10 +70,7 @@ namespace ADAPT.JohnDeere.Controllers
                 var connectionslink = orgresponseobj.SelectTokens("$..links[?(@rel=='connections')].uri").FirstOrDefault();
                 if (connectionslink != null)
                     return Redirect(connectionslink.Value<string>());
-                // var tokenObject = JsonConvert.DeserializeObject<KeyrockTokenResponse>(tokenResponseText);
                 var urlsep = state.IndexOf('?') >= 0 ? "&" : "?";
-                // RedirectResult redirectResult = Redirect($"{state}{urlsep}_keyrock_token_response={tokenResponseText}");
-                // return redirectResult;
                 return new ContentResult
                 {
                     ContentType = "text/html",
@@ -79,6 +79,38 @@ namespace ADAPT.JohnDeere.Controllers
             }
 
             return NotFound();
+
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterUser([FromBody] UserToken userdata)
+        {
+            var authconfig = configuration.GetSection("johndeere:auth");
+            var apiUrl = authconfig.GetValue<string>("apiUrl");
+
+            var client = new HttpClient();
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userdata.AccessToken);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.deere.axiom.v3+json"));
+
+            var usersresponse = await client.GetAsync($"{apiUrl}/users/@currentUser");
+
+            if (usersresponse.StatusCode != HttpStatusCode.OK)
+            {
+                return BadRequest();
+            }
+            var responseData = JObject.Parse(await usersresponse.Content.ReadAsStringAsync(6));
+
+            await mediator.Send(new CreateOrUpdateUserRegistration() {
+                ExternalUserId = responseData.Value<string>("accountName"),
+                UserId = userdata.UserId,
+                AccessToken = userdata.AccessToken,
+                RefreshToken = userdata.RefreshToken,
+                ExpiresIn = userdata.ExpiresIn
+            });
+
+            return Ok();
 
         }
     }
