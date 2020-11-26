@@ -22,7 +22,11 @@ namespace ADAPT.JohnDeere.handlers.Handler.Query
         {
             var recordedUserToken = await (from um in db.UsersTokens where um.Id == request.UserId select um).FirstOrDefaultAsync();
 
-            return new UserToken() {
+            if (recordedUserToken == null)
+                return null;
+
+            return new UserToken()
+            {
                 AccessToken = recordedUserToken.AccessToken,
                 ExpiresIn = recordedUserToken.ExpiresIn,
                 ExternalUserId = recordedUserToken.ExternalId,

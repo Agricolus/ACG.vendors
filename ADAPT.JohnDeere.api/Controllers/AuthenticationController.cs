@@ -105,6 +105,9 @@ namespace ADAPT.JohnDeere.Controllers
         public async Task<IActionResult> CheckUserToken(string userId)
         {
             var userToken = await mediator.Send(new GetUserToken() { UserId = userId });
+            if (userToken == null)
+                return Ok(false);
+                
             var usersresponse = await this.apiclient.Call<User>("/users/@currentUser", userToken.AccessToken);
             if (usersresponse == null)
             {

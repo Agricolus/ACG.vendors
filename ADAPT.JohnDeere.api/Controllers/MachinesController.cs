@@ -40,7 +40,7 @@ namespace ADAPT.JohnDeere.api.Controllers
             {
                 var orgmachinelink = org.Links.Where(l => l.Rel == "machines").Select(l => l.Uri).FirstOrDefault();
                 if (orgmachinelink == null) continue;
-                var orgmachine = await apiclient.Call<Response<Machine>>(orgmachinelink, accessToken.AccessToken);
+                var orgmachine = await apiclient.Call<Response<Machine>>($"{orgmachinelink}?embed=breadcrumbs", accessToken.AccessToken);
                 foreach (var machine in orgmachine.Values)
                 {
                     var r = new
@@ -62,7 +62,10 @@ namespace ADAPT.JohnDeere.api.Controllers
                         machine.ProductKey,
                         machine.TelematicsState,
                         machine.Vin,
-                        machine.VisualizationCategory
+                        machine.VisualizationCategory,
+                        machine.Lat,
+                        machine.Lng,
+                        machine.PositionTime
                     };
                     machines.Add(r);
                 }

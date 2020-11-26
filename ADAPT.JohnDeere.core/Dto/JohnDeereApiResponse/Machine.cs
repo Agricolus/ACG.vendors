@@ -54,5 +54,14 @@ namespace ADAPT.JohnDeere.core.Dto.JohnDeereApiResponse
         public string EquipmentModel { get; set; }
 
         public Link[] Links { get; set; }
+
+        [JsonProperty("currentLocation.point.lat")]
+        public double Lat { get; set; }
+
+        [JsonProperty("currentLocation.point.lon")]
+        public double Lng { get; set; }
+
+        [JsonProperty("currentLocation.eventTimestamp")]
+        public DateTime PositionTime { get; set; }
     }
 }
