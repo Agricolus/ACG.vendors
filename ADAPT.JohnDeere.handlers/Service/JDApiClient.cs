@@ -19,20 +19,20 @@ namespace ADAPT.JohnDeere.handlers.Service
             this.configuration = configuration;
         }
 
-        public async Task<T> Call<T>(string endpoint, string accessToken)
+        public async Task<T> Get<T>(string endpoint, string accessToken)
         {
             var authconfig = configuration.GetSection("johndeere:auth");
             var apiUrl = authconfig.GetValue<string>("apiUrl");
-            var otherclient = new HttpClient();
+            var client = new HttpClient();
 
             var jdapi = $"{apiUrl}/{endpoint}";
             if (endpoint.StartsWith("http"))
                 jdapi = endpoint;
 
-            otherclient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-            otherclient.DefaultRequestHeaders.Accept.Clear();
-            otherclient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.deere.axiom.v3+json"));
-            var apiresponse = await otherclient.GetAsync(jdapi);
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.deere.axiom.v3+json"));
+            var apiresponse = await client.GetAsync(jdapi);
             if (apiresponse.StatusCode != HttpStatusCode.OK)
                 return default(T);
 

@@ -8,6 +8,9 @@ using System.IO;
 using ACG;
 using MediatR;
 using System.Reflection;
+using AutoMapper;
+using ACG.Vendors.ADAPT.api.Service;
+using ACG.Common.Service;
 
 namespace ACG
 {
@@ -47,10 +50,14 @@ namespace ACG
 
 
             Loader.Current.ConfigureServices(services, this.Configuration);
+            
+            services.AddAutoMapper(Loader.Current.Assemblies);
 
             services.AddControllers();
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
+
+            services.AddScoped<IMainApiClient, MainApiClient>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

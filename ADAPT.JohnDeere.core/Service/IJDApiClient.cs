@@ -5,6 +5,6 @@ namespace ADAPT.JohnDeere.core.Service
 {
     public interface IJDApiClient
     {
-        Task<T> Call<T>(string endpoint, string accessToken);
+        Task<T> Get<T>(string endpoint, string accessToken);
     }
 }

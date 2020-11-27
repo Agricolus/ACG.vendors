@@ -19,11 +19,13 @@ namespace ADAPT.JohnDeere.handlers
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            // .. and invoke "BuildIndexesFromAnnotations"!
-            // modelBuilder.BuildIndexesFromAnnotations();
+            modelBuilder.HasPostgresExtension("uuid-ossp")
+                                           .Entity<Machine>()
+                                           .Property(e => e.Id)
+                                           .HasDefaultValueSql("uuid_generate_v4()");
         }
 
         public DbSet<UserToken> UsersTokens { get; set; }
+        public DbSet<Machine> Machines { get; set; }
     }
 }

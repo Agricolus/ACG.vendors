@@ -13,5 +13,9 @@
     <PackageReference Include="System.Composition" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ACG.Common\ACG.Common.csproj" />
+  </ItemGroup>
+
 
 </Project>

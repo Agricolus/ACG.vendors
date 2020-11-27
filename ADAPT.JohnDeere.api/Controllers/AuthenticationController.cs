@@ -45,7 +45,7 @@ namespace ADAPT.JohnDeere.Controllers
 
             if (accessToken != null)
             {
-                var orgresponseobj = await apiclient.Call<Response<Organization>>("/organizations", accessToken.AccessToken);
+                var orgresponseobj = await apiclient.Get<Response<Organization>>("/organizations", accessToken.AccessToken);
                 if (orgresponseobj == null)
                     return BadRequest("unable to retrieve user organizations");
 
@@ -80,7 +80,7 @@ namespace ADAPT.JohnDeere.Controllers
 
             // var usersresponse = await client.GetAsync($"{apiUrl}/users/@currentUser");
 
-            var usersresponse = await this.apiclient.Call<User>("/users/@currentUser", userdata.AccessToken);
+            var usersresponse = await this.apiclient.Get<User>("/users/@currentUser", userdata.AccessToken);
 
             if (usersresponse == null)
             {
@@ -108,7 +108,7 @@ namespace ADAPT.JohnDeere.Controllers
             if (userToken == null)
                 return Ok(false);
                 
-            var usersresponse = await this.apiclient.Call<User>("/users/@currentUser", userToken.AccessToken);
+            var usersresponse = await this.apiclient.Get<User>("/users/@currentUser", userToken.AccessToken);
             if (usersresponse == null)
             {
                 userToken = await mediator.Send(new RefreshUserAccessToken() { RefreshToken = userToken.RefreshToken });

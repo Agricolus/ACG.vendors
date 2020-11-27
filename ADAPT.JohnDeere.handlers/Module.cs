@@ -10,6 +10,9 @@ using MediatR;
 using ADAPT.JohnDeere.handlers;
 using ADAPT.JohnDeere.core.Service;
 using ADAPT.JohnDeere.handlers.Service;
+using AutoMapper;
+using ADAPT.JohnDeere.handlers.Model;
+using ADAPT.JohnDeere.core.Dto;
 
 namespace ADAPT.JohnDeere.api
 {
@@ -20,12 +23,20 @@ namespace ADAPT.JohnDeere.api
             switch (configuration["DataBaseType"])
             {
                 case "postgre": services.AddDbContext<JohnDeereContext>(options => options.UseNpgsql(configuration.GetConnectionString("ACGPostgreContext"))); break;
-                // case "mysql": services.AddDbContext<StationsContext>(options => options.UseMySql(configuration.GetConnectionString("ACGMySqlContext"))); break;
+                    // case "mysql": services.AddDbContext<StationsContext>(options => options.UseMySql(configuration.GetConnectionString("ACGMySqlContext"))); break;
             }
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
             services.AddScoped<IJDApiClient, JDApiClient>();
         }
+    }
 
+    public class JohnDeereMappingsProfile : Profile
+    {
+        public JohnDeereMappingsProfile()
+        {
+            CreateMap<Machine, MachineRegistration>();
+            CreateMap<MachineRegistration, Machine>().ForAllMembers(opt => opt.Condition((source, destination, sourceMember, destMember) => (sourceMember != null)));
+        }
     }
 }
