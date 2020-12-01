@@ -53,7 +53,7 @@ namespace ACG
             
             services.AddAutoMapper(Loader.Current.Assemblies);
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
 
             services.AddMediatR(Assembly.GetExecutingAssembly());
 

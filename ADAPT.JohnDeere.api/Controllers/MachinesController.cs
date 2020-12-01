@@ -9,6 +9,7 @@ using ADAPT.JohnDeere.core.Service;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace ADAPT.JohnDeere.api.Controllers
@@ -38,6 +39,7 @@ namespace ADAPT.JohnDeere.api.Controllers
         [HttpPost("{userId}/{machineId}")]
         public async Task<IActionResult> ListMachinesFromSource(string userId, ACG.Common.Dto.Machine machine)
         {
+            machine.OtherData = JsonConvert.DeserializeObject<object>(machine.OtherData.ToString());
             var machines = await mediator.Send(new RegisterMachine() { Machine = machine });
             return Ok(machines);
         }
