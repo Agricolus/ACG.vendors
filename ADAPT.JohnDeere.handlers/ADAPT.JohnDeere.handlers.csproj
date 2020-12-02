@@ -1,9 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="AgGatewayADAPTFramework" Version="2.1.0" />
+		<PackageReference Include="AgGatewayADMPlugin" Version="2.0.6" />
 		<PackageReference Include="AutoMapper" Version="10.1.1" />
 		<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.0" />
 		<PackageReference Include="MediatR" Version="9.0.0" />
@@ -12,8 +13,12 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Analyzers" Version="5.0.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.0">
-		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		  <PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>
+				runtime; build; native; contentfiles; analyzers; buildtransitive
+			</IncludeAssets>
+			<PrivateAssets>
+				all
+			</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
@@ -23,7 +28,49 @@
 		<PackageReference Include="System.Composition" Version="5.0.0" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\ACG.Common\ACG.Common.csproj" />
-	  <ProjectReference Include="..\ADAPT.JohnDeere.core\ADAPT.JohnDeere.core.csproj" />
+		<ProjectReference Include="..\ACG.Common\ACG.Common.csproj" />
+		<ProjectReference Include="..\ADAPT.JohnDeere.core\ADAPT.JohnDeere.core.csproj" />
 	</ItemGroup>
+	<!--
+	<Target Name="CopyADAPTPlugin" AfterTargets="CopyFilesToOutputDirectory">
+	<ItemGroup>
+	<ADAPTPlugin Include="$(MSBuildProjectDirectory)\Plugin\*.*" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+	<Message Text="$(MSBuildProjectName): copying ADAPT plugin folder" Importance="high" />
+	<Copy SourceFiles="@(ADAPTPlugin)"
+	DestinationFolder="$(OutputPath)\$(MSBuildProjectName)\"
+	SkipUnchangedFiles="true"
+	OverwriteReadOnlyFiles="true"
+	Retries="3"
+	RetryDelayMilliseconds="300" />
+	</Target>
+	-->
+	<!-- <Target Name="CopyADAPPlugin" AfterTargets="Build">
+		<PropertyGroup>
+			<PluginOutFolder>$(OutputPath)\$(MSBuildProjectName)\</PluginOutFolder>
+		</PropertyGroup>
+		<Message Text="$(MSBuildProjectName) plugin folder: $(PluginOutFolder)" Importance="high" />
+		<ItemGroup>
+			<ADAPTPlugin Include="$(MSBuildProjectDirectory)\Plugin\*.*" CopyToOutputDirectory="PreserveNewest" />
+		</ItemGroup>
+		<MakeDir Directories="$(PluginOutFolder)" />
+		<Copy SourceFiles="@(ADAPTPlugin)" DestinationFolder="$(PluginOutFolder)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" />
+	</Target> -->
+	<!--
+	<Target Name="GenerateGetCopyToOutputDirectoryItems"
+		BeforeTargets="GetCopyToOutputDirectoryItems"
+		Returns="@(AllPublishItemsFullPathWithTargetPath)">
+	<Message Text="**** GetCopyToOutputDirectoryItems ****" Importance="high" />
+	<ItemGroup>
+	<AllPublishItemsFullPathWithTargetPath Include="@(ADAPTPlugin)">
+	<TargetPath>
+	@(ADAPTPlugin->'%(FullPath)'')
+	</TargetPath>
+	<CopyToPublishDirectory>
+	PreserveNewest
+	</CopyToPublishDirectory>
+	</AllPublishItemsFullPathWithTargetPath>
+	</ItemGroup>
+	</Target>
+	-->
 </Project>

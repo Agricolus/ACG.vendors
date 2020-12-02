@@ -1,9 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ACG.Common.Dto;
 using ADAPT.JohnDeere.core.CQRS.Command;
 using ADAPT.JohnDeere.core.CQRS.Query;
 using ADAPT.JohnDeere.core.Dto;
@@ -83,7 +81,8 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
                 UserId = request.UserId,
                 Machines = machinesRegistrations
             });
-            foreach(var registerdMachine in machinesRegistrations) {
+            foreach (var registerdMachine in machinesRegistrations)
+            {
                 var machine = machines.Find(m => m.ExternalId == registerdMachine.ExternalId);
                 machine.Id = registerdMachine.Id;
                 machine.IsRegistered = registerdMachine.RegistrationTime != null;

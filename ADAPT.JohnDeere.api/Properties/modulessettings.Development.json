@@ -1,0 +1,14 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft": "Warning",
+      "Microsoft.Hosting.Lifetime": "Information"
+    }
+  },
+  "auth": {
+    "appId": "johndeere-jtdNu9wXXwGCO76Xr53gGoDfFEbxHz2H9XVK9SDk",
+    "appSecret": "bb1717151b91175cf040e0846853982313b37b440752111c6ab6c7ae2dc9fd26"
+  },
+  "test": "can you see me?"
+}

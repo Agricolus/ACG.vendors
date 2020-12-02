@@ -17,10 +17,4 @@
 		<ProjectReference Include="..\ACG.Common\ACG.Common.csproj" />
 		<ProjectReference Include="..\ADAPT.JohnDeere.core\ADAPT.JohnDeere.core.csproj" />
 	</ItemGroup>
-	 <!-- <ItemGroup>
-        <ModuleSettingsFile Include="modulesettings.json;modulesettings.Development.json"/>
-    </ItemGroup>
-	<Target Name="CopyCustomContent" AfterTargets="AfterBuild">
-		<Copy SourceFiles="@(ModuleSettingsFile)" DestinationFiles="$(OutDir)/$(MSBuildProjectName).%(Filename).%(Extension)" />
-	</Target> -->
 </Project>

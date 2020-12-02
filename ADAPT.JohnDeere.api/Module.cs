@@ -14,8 +14,6 @@ namespace ADAPT.JohnDeere.api
     {
         public void ConfigureServices(IServiceCollection services, IConfiguration configuration)
         {
-            var me = Assembly.GetExecutingAssembly();
-            me.GetName();
         }
 
     }
