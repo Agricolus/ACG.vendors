@@ -1,13 +1,30 @@
 <Project>
-	<Target Name="CopyADAPPlugin" AfterTargets="Build">
-		<!-- <PropertyGroup>
-			<PluginOutFolder>$(OutputPath)\$(MSBuildProjectName)\</PluginOutFolder>
-		</PropertyGroup>
-		<Message Text="$(MSBuildProjectName) plugin folder: $(PluginOutFolder)" Importance="high" />
+	<PropertyGroup>
+		<PluginFolder>$(MSBuildProjectDirectory)\Plugin</PluginFolder>
+	</PropertyGroup>
+	<Target Name="IncludeADAPTPlugin" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="Exists('$(PluginFolder)')">
 		<ItemGroup>
-			<ADAPTPlugin Include="$(MSBuildProjectDirectory)\Plugin\*.*" CopyToOutputDirectory="PreserveNewest" />
+			<ADAPTPlugin Include="$(PluginFolder)\*.*" />
 		</ItemGroup>
-		<MakeDir Directories="$(PluginOutFolder)" Condition="!Exists('$(PluginOutFolder)')"/>
-		<Copy SourceFiles="@(ADAPTPlugin)" DestinationFolder="$(PluginOutFolder)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" /> -->
+		<ItemGroup>
+			<ADAPTPluginFiles Include="@(ADAPTPlugin -> '%(RelativeDir)%(Filename)%(Extension)' )">
+				<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+				<TargetPath>$(AssemblyName)/%(FileName)%(Extension)</TargetPath>
+			</ADAPTPluginFiles>
+			<AllItemsFullPathWithTargetPath Include="@(ADAPTPluginFiles->'%(FullPath)')"  />
+		</ItemGroup>
+	</Target>
+
+	<PropertyGroup>
+		<ModuleConfigFile>$(MSBuildProjectDirectory)\settings.json</ModuleConfigFile>
+	</PropertyGroup>
+	<Target Name="IncludeModuleConfig" BeforeTargets="GetCopyToOutputDirectoryItems" Condition="Exists('$(ModuleConfigFile)')">
+	<Message Text="i got a config $(ModuleConfigFile)" Importance="high" />
+		<ItemGroup>
+			<AllItemsFullPathWithTargetPath Include="$(ModuleConfigFile)">
+				<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+				<TargetPath>$(AssemblyName).settings.json</TargetPath>
+			</AllItemsFullPathWithTargetPath>
+		</ItemGroup>
 	</Target>
 </Project>

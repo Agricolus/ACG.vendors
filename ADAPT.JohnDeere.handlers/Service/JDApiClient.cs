@@ -34,7 +34,7 @@ namespace ADAPT.JohnDeere.handlers.Service
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.deere.axiom.v3+json"));
             var apiresponse = await client.GetAsync(jdapi);
             if (apiresponse.StatusCode != HttpStatusCode.OK)
-                return default(T);
+                throw new Exception(await apiresponse.Content.ReadAsStringAsync());
 
             var apiresponsetext = await apiresponse.Content.ReadAsStringAsync();
             var apiresponseobj = JsonConvert.DeserializeObject<T>(apiresponsetext);

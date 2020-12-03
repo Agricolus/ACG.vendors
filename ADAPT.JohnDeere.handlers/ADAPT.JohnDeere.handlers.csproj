@@ -23,6 +23,8 @@
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.0" />
 		<PackageReference Include="System.Composition" Version="5.0.0" />
@@ -31,46 +33,4 @@
 		<ProjectReference Include="..\ACG.Common\ACG.Common.csproj" />
 		<ProjectReference Include="..\ADAPT.JohnDeere.core\ADAPT.JohnDeere.core.csproj" />
 	</ItemGroup>
-	<!--
-	<Target Name="CopyADAPTPlugin" AfterTargets="CopyFilesToOutputDirectory">
-	<ItemGroup>
-	<ADAPTPlugin Include="$(MSBuildProjectDirectory)\Plugin\*.*" CopyToOutputDirectory="PreserveNewest" />
-	</ItemGroup>
-	<Message Text="$(MSBuildProjectName): copying ADAPT plugin folder" Importance="high" />
-	<Copy SourceFiles="@(ADAPTPlugin)"
-	DestinationFolder="$(OutputPath)\$(MSBuildProjectName)\"
-	SkipUnchangedFiles="true"
-	OverwriteReadOnlyFiles="true"
-	Retries="3"
-	RetryDelayMilliseconds="300" />
-	</Target>
-	-->
-	<!-- <Target Name="CopyADAPPlugin" AfterTargets="Build">
-		<PropertyGroup>
-			<PluginOutFolder>$(OutputPath)\$(MSBuildProjectName)\</PluginOutFolder>
-		</PropertyGroup>
-		<Message Text="$(MSBuildProjectName) plugin folder: $(PluginOutFolder)" Importance="high" />
-		<ItemGroup>
-			<ADAPTPlugin Include="$(MSBuildProjectDirectory)\Plugin\*.*" CopyToOutputDirectory="PreserveNewest" />
-		</ItemGroup>
-		<MakeDir Directories="$(PluginOutFolder)" />
-		<Copy SourceFiles="@(ADAPTPlugin)" DestinationFolder="$(PluginOutFolder)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" />
-	</Target> -->
-	<!--
-	<Target Name="GenerateGetCopyToOutputDirectoryItems"
-		BeforeTargets="GetCopyToOutputDirectoryItems"
-		Returns="@(AllPublishItemsFullPathWithTargetPath)">
-	<Message Text="**** GetCopyToOutputDirectoryItems ****" Importance="high" />
-	<ItemGroup>
-	<AllPublishItemsFullPathWithTargetPath Include="@(ADAPTPlugin)">
-	<TargetPath>
-	@(ADAPTPlugin->'%(FullPath)'')
-	</TargetPath>
-	<CopyToPublishDirectory>
-	PreserveNewest
-	</CopyToPublishDirectory>
-	</AllPublishItemsFullPathWithTargetPath>
-	</ItemGroup>
-	</Target>
-	-->
 </Project>

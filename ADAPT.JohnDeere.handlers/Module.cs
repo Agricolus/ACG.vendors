@@ -7,14 +7,15 @@ using System.IO;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
-using ADAPT.JohnDeere.handlers;
 using ADAPT.JohnDeere.core.Service;
 using ADAPT.JohnDeere.handlers.Service;
 using AutoMapper;
 using ADAPT.JohnDeere.handlers.Model;
 using ADAPT.JohnDeere.core.Dto;
+using System.Collections.Generic;
+using Microsoft.Extensions.Primitives;
 
-namespace ADAPT.JohnDeere.api
+namespace ADAPT.JohnDeere.handlers
 {
     public class Module : IModule
     {

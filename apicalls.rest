@@ -1,1 +1,5 @@
-GET http://localhost:5007/johndeere/documents/userid/documentid HTTP/1.1
+GET http://localhost:5007/johndeere/documents/bd8a4707-df0a-41a7-9223-5f928d27f687/documentid HTTP/1.1
+
+###
+GET http://localhost:5007/johndeere/documents/bd8a4707-df0a-41a7-9223-5f928d27f687 HTTP/1.1
+

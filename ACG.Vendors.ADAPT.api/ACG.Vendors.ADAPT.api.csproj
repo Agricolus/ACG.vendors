@@ -29,10 +29,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\ACG.Common\ACG.Common.csproj" />
 		<ProjectReference Include="..\ADAPT.JohnDeere.api\ADAPT.JohnDeere.api.csproj" />
-		<ProjectReference Include="..\ADAPT.JohnDeere.handlers\ADAPT.JohnDeere.handlers.csproj">
-			<IncludeAssets>
-				all
-			</IncludeAssets>
-		</ProjectReference>
+		<ProjectReference Include="..\ADAPT.JohnDeere.handlers\ADAPT.JohnDeere.handlers.csproj" />
+		<ProjectReference Include="..\ACG.Vendors.ADAPT.handlers\ACG.Vendors.ADAPT.handlers.csproj" />
 	</ItemGroup>
 </Project>

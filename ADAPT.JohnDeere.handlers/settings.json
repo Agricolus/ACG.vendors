@@ -1,0 +1,10 @@
+{
+    "ADAPTappId": "9b2e5e8e-de73-4ee3-a2cd-6d940e19cb6f",
+    "appId": "johndeere-jtdNu9wXXwGCO76Xr53gGoDfFEbxHz2H9XVK9SDk",
+    "appSecret": "bb1717151b91175cf040e0846853982313b37b440752111c6ab6c7ae2dc9fd26",
+    "authUrl": "https://signin.johndeere.com/oauth2/aus78tnlaysMraFhC1t7/v1/authorize",
+    "accessTokenUrl": "https://signin.johndeere.com/oauth2/aus78tnlaysMraFhC1t7/v1/token",
+    "cbUrl": "http://localhost:5007/johndeere/authentication/cb",
+    "organizationAuthUrl": "https://connections.deere.com/connections/{0}/select-organizations?redirect_uri={1}",
+    "apiUrl": "https://sandboxapi.deere.com/platform"
+}

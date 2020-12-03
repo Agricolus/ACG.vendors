@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADAPT.JohnDeere.handlers", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADAPT.JohnDeere.core", "ADAPT.JohnDeere.core\ADAPT.JohnDeere.core.csproj", "{1ED44F87-26C7-4555-B041-D8110588021E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACG.Vendors.ADAPT.handlers", "ACG.Vendors.ADAPT.handlers\ACG.Vendors.ADAPT.handlers.csproj", "{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,18 @@ Global
 		{1ED44F87-26C7-4555-B041-D8110588021E}.Release|x64.Build.0 = Release|Any CPU
 		{1ED44F87-26C7-4555-B041-D8110588021E}.Release|x86.ActiveCfg = Release|Any CPU
 		{1ED44F87-26C7-4555-B041-D8110588021E}.Release|x86.Build.0 = Release|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Debug|x64.Build.0 = Debug|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Debug|x86.Build.0 = Debug|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Release|x64.ActiveCfg = Release|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Release|x64.Build.0 = Release|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Release|x86.ActiveCfg = Release|Any CPU
+		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1ED44F87-26C7-4555-B041-D8110588021E} = {E8EF4FC0-2A50-11EB-BB5D-5F6EF2EC50DC}

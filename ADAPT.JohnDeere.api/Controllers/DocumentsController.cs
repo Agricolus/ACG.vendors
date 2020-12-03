@@ -17,8 +17,15 @@ namespace ADAPT.JohnDeere.api.Controllers
             this.mediator = mediator;
         }
 
-        [HttpGet("{userId}/{documentId}")]
+        [HttpGet("{userId}")]
         public async Task<IActionResult> ListDocuments(string userId, string documentId)
+        {
+            var whatever = await mediator.Send(new ListOrganizationsFiles() { UserId = userId });
+            return Ok(whatever);
+        }
+
+        [HttpGet("{userId}/{documentId}")]
+        public async Task<IActionResult> ImportDocument(string userId, string documentId)
         {
             var whatever = await mediator.Send(new GetADAPTDocument() { UserId = userId, DocuemntId = documentId });
             return Ok(whatever);

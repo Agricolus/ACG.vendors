@@ -21,7 +21,7 @@
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "https://dockerdev.agricolus.com:5008;http://dockerdev.agricolus.com:5007",
+      "applicationUrl": "https://localhost:5008;http://localhost.com:5007",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
