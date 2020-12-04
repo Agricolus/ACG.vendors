@@ -107,8 +107,12 @@ namespace ADAPT.JohnDeere.Controllers
             var userToken = await mediator.Send(new GetUserToken() { UserId = userId });
             if (userToken == null)
                 return Ok(false);
-                
-            var usersresponse = await this.apiclient.Get<User>("/users/@currentUser", userToken.AccessToken);
+            User usersresponse = null;
+            try
+            {
+                usersresponse = await this.apiclient.Get<User>("/users/@currentUser", userToken.AccessToken);
+            }
+            catch(Exception e) {}
             if (usersresponse == null)
             {
                 userToken = await mediator.Send(new RefreshUserAccessToken() { RefreshToken = userToken.RefreshToken });
