@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -21,8 +23,8 @@ namespace ADAPT.JohnDeere.handlers.Service
 
         public async Task<T> Get<T>(string endpoint, string accessToken)
         {
-            var authconfig = configuration.GetSection("johndeere:auth");
-            var apiUrl = authconfig.GetValue<string>("apiUrl");
+            var authConfig = configuration.GetSection("johndeere:auth");
+            var apiUrl = authConfig.GetValue<string>("apiUrl");
             var client = new HttpClient();
 
             var jdapi = $"{apiUrl}/{endpoint}";
@@ -32,14 +34,38 @@ namespace ADAPT.JohnDeere.handlers.Service
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.deere.axiom.v3+json"));
-            var apiresponse = await client.GetAsync(jdapi);
-            if (apiresponse.StatusCode != HttpStatusCode.OK)
-                throw new Exception(await apiresponse.Content.ReadAsStringAsync());
+            var apiResponse = await client.GetAsync(jdapi);
+            if (apiResponse.StatusCode != HttpStatusCode.OK)
+                throw new Exception(await apiResponse.Content.ReadAsStringAsync());
 
-            var apiresponsetext = await apiresponse.Content.ReadAsStringAsync();
-            var apiresponseobj = JsonConvert.DeserializeObject<T>(apiresponsetext);
+            var apiResponseText = await apiResponse.Content.ReadAsStringAsync();
+            var apiResponseObj = JsonConvert.DeserializeObject<T>(apiResponseText);
 
-            return apiresponseobj;
+            return apiResponseObj;
+        }
+
+        public async Task Download(string endpoint, string fileName, string accessToken)
+        {
+            var authConfig = configuration.GetSection("johndeere:auth");
+            var apiUrl = authConfig.GetValue<string>("apiUrl");
+            var client = new HttpClient();
+
+            var jdapi = $"{apiUrl}/{endpoint}";
+            if (endpoint.StartsWith("http"))
+                jdapi = endpoint;
+
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/zip"));
+            var apiResponse = await client.GetAsync(jdapi);
+            if (apiResponse.StatusCode != HttpStatusCode.OK)
+                throw new Exception(await apiResponse.Content.ReadAsStringAsync());
+            var apiResponseStream = await apiResponse.Content.ReadAsStreamAsync();
+            Directory.CreateDirectory(Path.GetDirectoryName(fileName));
+            var fileStream = File.OpenWrite(fileName);
+            await apiResponseStream.CopyToAsync(fileStream);
+            fileStream.Close();
+            return;
         }
     }
 }

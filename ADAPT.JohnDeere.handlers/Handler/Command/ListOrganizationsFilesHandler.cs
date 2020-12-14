@@ -21,7 +21,7 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
         {
             this.mediator = mediator;
             this.jdapiclient = jdclient;
-            
+
         }
         public async Task<List<DocumentFile>> Handle(ListOrganizationsFiles request, CancellationToken cancellationToken)
         {
@@ -31,11 +31,11 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
             // var machines = new List<ACG.Common.Dto.Machine>();
             var documentsFiles = new List<DocumentFile>();
 
-             foreach (var org in organizations.Values)
+            foreach (var org in organizations.Values)
             {
                 var orgfileslink = org.Links.Where(l => l.Rel == "files").Select(l => l.Uri).FirstOrDefault();
                 if (orgfileslink == null) continue;
-                var orgfiles = await jdapiclient.Get<Response<DocumentFile>>($"{orgfileslink};count=100", accessToken.AccessToken);
+                var orgfiles = await jdapiclient.Get<Response<DocumentFile>>($"{orgfileslink};count=100?fileType=4", accessToken.AccessToken);
                 foreach (var file in orgfiles.Values)
                 {
                     documentsFiles.Add(file);

@@ -6,5 +6,6 @@
     "accessTokenUrl": "https://signin.johndeere.com/oauth2/aus78tnlaysMraFhC1t7/v1/token",
     "cbUrl": "http://localhost:5007/johndeere/authentication/cb",
     "organizationAuthUrl": "https://connections.deere.com/connections/{0}/select-organizations?redirect_uri={1}",
-    "apiUrl": "https://sandboxapi.deere.com/platform"
+    "apiUrl": "https://sandboxapi.deere.com/platform",
+    "iotAgentUrl": "http://dockerdev.agricolus.com:7896/iot/isoxml"
 }

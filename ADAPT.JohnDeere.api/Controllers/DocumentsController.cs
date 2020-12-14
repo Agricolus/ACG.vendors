@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using ADAPT.JohnDeere.core.CQRS.Command;
+using ADAPT.JohnDeere.core.Dto.JohnDeereApiResponse;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,14 +21,14 @@ namespace ADAPT.JohnDeere.api.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> ListDocuments(string userId, string documentId)
         {
-            var whatever = await mediator.Send(new ListOrganizationsFiles() { UserId = userId });
-            return Ok(whatever);
+            var organizationsfiles = await mediator.Send(new ListOrganizationsFiles() { UserId = userId });
+            return Ok(organizationsfiles);
         }
 
-        [HttpGet("{userId}/{documentId}")]
-        public async Task<IActionResult> ImportDocument(string userId, string documentId)
+        [HttpPost("{userId}/{documentId}")]
+        public async Task<IActionResult> ImportDocument(string userId, string documentId, [FromBody] DocumentFile document)
         {
-            var whatever = await mediator.Send(new GetADAPTDocument() { UserId = userId, DocuemntId = documentId });
+            var whatever = await mediator.Send(new GetADAPTDocument() { UserId = userId, DocuemntId = documentId, DocumentFile = document });
             return Ok(whatever);
         }
 

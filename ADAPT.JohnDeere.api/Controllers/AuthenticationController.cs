@@ -69,17 +69,6 @@ namespace ADAPT.JohnDeere.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] UserToken userdata)
         {
-            // var authconfig = configuration.GetSection("johndeere:auth");
-            // var apiUrl = authconfig.GetValue<string>("apiUrl");
-
-            // var client = new HttpClient();
-
-            // client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userdata.AccessToken);
-            // client.DefaultRequestHeaders.Accept.Clear();
-            // client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.deere.axiom.v3+json"));
-
-            // var usersresponse = await client.GetAsync($"{apiUrl}/users/@currentUser");
-
             var usersresponse = await this.apiclient.Get<User>("/users/@currentUser", userdata.AccessToken);
 
             if (usersresponse == null)
