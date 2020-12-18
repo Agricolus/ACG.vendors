@@ -26,10 +26,18 @@ namespace ADAPT.JohnDeere.handlers
             uuidPGExtension.Entity<DocumentFile>()
                 .Property(e => e.Id)
                 .HasDefaultValueSql("uuid_generate_v4()");
+            uuidPGExtension.Entity<Client>()
+                .Property(e => e.Id)
+                .HasDefaultValueSql("uuid_generate_v4()");
+            uuidPGExtension.Entity<Field>()
+                .Property(e => e.Id)
+                .HasDefaultValueSql("uuid_generate_v4()");
         }
 
         public DbSet<UserToken> UsersTokens { get; set; }
         public DbSet<Machine> Machines { get; set; }
         public DbSet<DocumentFile> DocumentFile { get; set; }
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<Field> Fields { get; set; }
     }
 }

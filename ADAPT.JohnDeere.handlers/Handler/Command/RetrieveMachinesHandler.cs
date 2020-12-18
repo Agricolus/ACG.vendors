@@ -14,20 +14,20 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
     public class RetrieveMachinesHandler : IRequestHandler<RetrieveMachines, List<ACG.Common.Dto.Machine>>
     {
         private readonly JohnDeereContext db;
-        private readonly IJDApiClient jdapi;
+        private readonly IJDApiClient jdApiClient;
         private readonly IMediator mediator;
 
-        public RetrieveMachinesHandler(JohnDeereContext db, IJDApiClient jdapi, IMediator mediator)
+        public RetrieveMachinesHandler(JohnDeereContext db, IJDApiClient jdApiClient, IMediator mediator)
         {
             this.db = db;
-            this.jdapi = jdapi;
+            this.jdApiClient = jdApiClient;
             this.mediator = mediator;
         }
 
         public async Task<List<ACG.Common.Dto.Machine>> Handle(RetrieveMachines request, CancellationToken cancellationToken)
         {
             var accessToken = await mediator.Send(new GetUserToken() { UserId = request.UserId });
-            var organizations = await jdapi.Get<Response<Organization>>("/organizations", accessToken.AccessToken);
+            var organizations = await jdApiClient.Get<Response<Organization>>("/organizations", accessToken.AccessToken);
 
             var machines = new List<ACG.Common.Dto.Machine>();
             var machinesRegistrations = new List<MachineRegistration>();
@@ -35,7 +35,7 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
             {
                 var orgmachinelink = org.Links.Where(l => l.Rel == "machines").Select(l => l.Uri).FirstOrDefault();
                 if (orgmachinelink == null) continue;
-                var orgmachine = await jdapi.Get<Response<core.Dto.JohnDeereApiResponse.Machine>>($"{orgmachinelink}?embed=breadcrumbs", accessToken.AccessToken);
+                var orgmachine = await jdApiClient.Get<Response<core.Dto.JohnDeereApiResponse.Machine>>($"{orgmachinelink}?embed=breadcrumbs", accessToken.AccessToken);
                 foreach (var machine in orgmachine.Values)
                 {
                     var r = new ACG.Common.Dto.Machine()

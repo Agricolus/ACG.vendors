@@ -25,17 +25,17 @@ namespace ADAPT.JohnDeere.Controllers
     {
         private readonly IConfiguration configuration;
         private readonly IMediator mediator;
-        private readonly IJDApiClient apiclient;
+        private readonly IJDApiClient jdApiClient;
 
         // private readonly IModuleConfiguration moduleConfiguration;
 
         // public AuthenticationController(IConfiguration configuration, IModuleConfiguration moduleConfiguration)
-        public AuthenticationController(IConfiguration configuration, IMediator mediator, IJDApiClient apiclient)
+        public AuthenticationController(IConfiguration configuration, IMediator mediator, IJDApiClient jdApiClient)
         {
             this.configuration = configuration;
             // this.moduleConfiguration = moduleConfiguration;
             this.mediator = mediator;
-            this.apiclient = apiclient;
+            this.jdApiClient = jdApiClient;
         }
 
         [HttpGet("cb")]
@@ -45,7 +45,7 @@ namespace ADAPT.JohnDeere.Controllers
 
             if (accessToken != null)
             {
-                var orgresponseobj = await apiclient.Get<Response<Organization>>("/organizations", accessToken.AccessToken);
+                var orgresponseobj = await jdApiClient.Get<Response<Organization>>("/organizations", accessToken.AccessToken);
                 if (orgresponseobj == null)
                     return BadRequest("unable to retrieve user organizations");
 
@@ -69,7 +69,7 @@ namespace ADAPT.JohnDeere.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> RegisterUser([FromBody] UserToken userdata)
         {
-            var usersresponse = await this.apiclient.Get<User>("/users/@currentUser", userdata.AccessToken);
+            var usersresponse = await this.jdApiClient.Get<User>("/users/@currentUser", userdata.AccessToken);
 
             if (usersresponse == null)
             {
@@ -99,7 +99,7 @@ namespace ADAPT.JohnDeere.Controllers
             User usersresponse = null;
             try
             {
-                usersresponse = await this.apiclient.Get<User>("/users/@currentUser", userToken.AccessToken);
+                usersresponse = await this.jdApiClient.Get<User>("/users/@currentUser", userToken.AccessToken);
             }
             catch(Exception e) {}
             if (usersresponse == null)

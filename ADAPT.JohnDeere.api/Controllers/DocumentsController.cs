@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using ADAPT.JohnDeere.core.CQRS.Command;
 using ADAPT.JohnDeere.core.Dto.JohnDeereApiResponse;

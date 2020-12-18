@@ -38,6 +38,10 @@ namespace ADAPT.JohnDeere.handlers
         {
             CreateMap<Machine, MachineRegistration>();
             CreateMap<MachineRegistration, Machine>().ForAllMembers(opt => opt.Condition((source, destination, sourceMember, destMember) => (sourceMember != null)));
+            CreateMap<Field, FieldRegistration>();
+            CreateMap<FieldRegistration, Field>().ForAllMembers(opt => opt.Condition((source, destination, sourceMember, destMember) => (sourceMember != null)));
+            CreateMap<Client, ClientRegistration>();
+            CreateMap<ClientRegistration, Client>().ForAllMembers(opt => opt.Condition((source, destination, sourceMember, destMember) => (sourceMember != null)));
         }
     }
 }

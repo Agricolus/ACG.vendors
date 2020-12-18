@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using ADAPT.JohnDeere.core.CQRS.Command;
-using ADAPT.JohnDeere.core.CQRS.Query;
-using ADAPT.JohnDeere.core.Dto.JohnDeereApiResponse;
 using ADAPT.JohnDeere.core.Service;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace ADAPT.JohnDeere.api.Controllers
 {
@@ -20,13 +15,13 @@ namespace ADAPT.JohnDeere.api.Controllers
     {
         private IMediator mediator;
         private readonly IConfiguration configuration;
-        private readonly IJDApiClient apiclient;
+        private readonly IJDApiClient jdApiClient;
 
-        public MachinesController(IMediator mediator, IConfiguration configuration, IJDApiClient apiclient)
+        public MachinesController(IMediator mediator, IConfiguration configuration, IJDApiClient jdApiClient)
         {
             this.mediator = mediator;
             this.configuration = configuration;
-            this.apiclient = apiclient;
+            this.jdApiClient = jdApiClient;
         }
 
         [HttpGet("{userId}")]
@@ -44,7 +39,15 @@ namespace ADAPT.JohnDeere.api.Controllers
             return Ok(machines);
         }
 
-        
+
+        [HttpGet("{userId}/{machineId}")]
+        public async Task<IActionResult> MachineLocations(string userId, Guid machineId)
+        {
+            var locationHistory = await mediator.Send(new GetMachineLocationHistory() { UserId = userId, MachineId = machineId });
+            return Ok(locationHistory);
+        }
+
+
 
     }
-} 
+}

@@ -30,6 +30,7 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
             this.mapper = mapper;
             this.jdApiClient = jdApiClient;
         }
+        
         public async Task<List<MachineRegistration>> Handle(RegisterMachines request, CancellationToken cancellationToken)
         {
             var registered = await (from ms in db.Machines where ms.UserId == request.UserId select ms).ToListAsync();
