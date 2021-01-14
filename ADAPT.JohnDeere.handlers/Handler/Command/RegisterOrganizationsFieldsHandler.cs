@@ -29,25 +29,18 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
 
         public async Task<Field> Handle(RegisterOrganizationField request, CancellationToken cancellationToken)
         {
-            var fieldArea = request.Field.Boundaries.ToList().Sum(b => b.Area.ValueAsDouble);
-            // var clientId = request.Field.Clients.Clients.Select(c => c.Id).FirstOrDefault();
-            var owningOrganizationId = request.Field.Links.Where(l => l.Rel == "owningOrganization").Select(l => l.Uri.Split("/").Last()).FirstOrDefault();
-            double[][][][] boundaries = request.Field.Boundaries.Select(b => b.Multipolygons.Select(m => m.Rings.Select(r => r.Points.Select(p => new double[] { p.Lat, p.Lon }).ToArray()).ToArray()).ToArray()).FirstOrDefault();
-            Field field = new Field()
-            {
-                Area = fieldArea,
-                ExternalId = request.Field.Id.ToString(),
-                ClientId = "our_client_id_from_clients_import_not_external_client_id",
-                Name = request.Field.Name,
-                ProducerCode = "johndeere",
-                Boundaries = boundaries
-            };
-            var clientName = request.Field.Clients.Clients.First().Name;
-            Client clent = new Client()
-            {
-                Name = clientName
-            };
-            return field;
+            var field = request.Field;
+            var registeredField = await (from ms in db.Fields where ms.Id == field.Id select ms).FirstOrDefaultAsync();
+            if (registeredField == null) return null;
+
+            var response = await mainApiClient.Post<Field>("fields/import/producer", field);
+            response.IsRegistered = true;
+
+            registeredField.RegistrationTime = field.ModificationTime;
+
+            await db.SaveChangesAsync();
+
+            return response;
         }
 
         public async Task<List<FieldRegistration>> Handle(RegisterOrganizationsFields request, CancellationToken cancellationToken)

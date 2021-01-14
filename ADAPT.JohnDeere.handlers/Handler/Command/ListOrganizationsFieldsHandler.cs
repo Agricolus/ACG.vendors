@@ -63,8 +63,7 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
                 clientsregs.Add(new ClientRegistration()
                 {
                     ExternalId = client.ExternalId,
-                    UserId = request.UserId,
-                    RegistrationTime = DateTime.UtcNow
+                    UserId = request.UserId
                 });
             }
             var clientsRegistrations = await mediator.Send(new RegisterOrganizationsClients()
@@ -85,8 +84,8 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
                 var extclientId = clientsRegistrations.Find(c => c.ExternalId == clientId).Id.ToString();
                 var fieldArea = f.Boundaries.ToList().Sum(b => b.Area.ValueAsDouble);
                 var owningOrganizationId = f.Links.Where(l => l.Rel == "owningOrganization").Select(l => l.Uri.Split("/").Last()).FirstOrDefault();
-                double[][][][] boundaries = f.Boundaries.Select(b => b.Multipolygons.Select(m => m.Rings.Where(r => r.Passable).Select(r => r.Points.Select(p => new double[] { p.Lat, p.Lon }).ToArray()).ToArray()).ToArray()).FirstOrDefault();
-                double[][][][] unpassableBoundaries = f.Boundaries.Select(b => b.Multipolygons.Select(m => m.Rings.Where(r => !r.Passable).Select(r => r.Points.Select(p => new double[] { p.Lat, p.Lon }).ToArray()).ToArray()).ToArray()).FirstOrDefault();
+                double[][][] boundaries = f.Boundaries.SelectMany(b => b.Multipolygons.Select(m => m.Rings.Where(r => r.Passable).Select(r => r.Points.Select(p => new double[] { p.Lat, p.Lon }).ToArray()).ToArray()).ToArray()).FirstOrDefault();
+                double[][][] unpassableBoundaries = f.Boundaries.SelectMany(b => b.Multipolygons.Select(m => m.Rings.Where(r => !r.Passable).Select(r => r.Points.Select(p => new double[] { p.Lat, p.Lon }).ToArray()).ToArray()).ToArray()).FirstOrDefault();
                 ACG.Common.Dto.Field field = new ACG.Common.Dto.Field()
                 {
                     UserId = request.UserId,
@@ -96,7 +95,8 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
                     Name = f.Name,
                     ProducerCode = "johndeere",
                     Boundaries = boundaries,
-                    UnpassableBoundaries = unpassableBoundaries
+                    UnpassableBoundaries = unpassableBoundaries,
+                    ModificationTime = f.LastModifiedTime
                 };
                 outfields.Add(field);
                 fieldsregs.Add(new FieldRegistration()
@@ -118,7 +118,6 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
                 of.Id = fr.Id;
                 of.IsRegistered = fr.RegistrationTime != null;
             }
-
             return new FieldsClients()
             {
                 Fields = outfields.ToArray(),

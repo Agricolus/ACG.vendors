@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ADAPT.JohnDeere.core", "ADA
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ACG.Vendors.ADAPT.handlers", "ACG.Vendors.ADAPT.handlers\ACG.Vendors.ADAPT.handlers.csproj", "{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FIWARE.ContextBroker", "FIWARE.ContextBroker\FIWARE.ContextBroker.csproj", "{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +106,18 @@ Global
 		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Release|x64.Build.0 = Release|Any CPU
 		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Release|x86.ActiveCfg = Release|Any CPU
 		{A02F9772-F8BF-4E71-BB1E-8AD1A6B3CC64}.Release|x86.Build.0 = Release|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Debug|x64.Build.0 = Debug|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Debug|x86.Build.0 = Debug|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Release|x64.ActiveCfg = Release|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Release|x64.Build.0 = Release|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Release|x86.ActiveCfg = Release|Any CPU
+		{2C7CAB6D-A48C-4A0E-BA77-8F54AEA4D0EA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1ED44F87-26C7-4555-B041-D8110588021E} = {E8EF4FC0-2A50-11EB-BB5D-5F6EF2EC50DC}

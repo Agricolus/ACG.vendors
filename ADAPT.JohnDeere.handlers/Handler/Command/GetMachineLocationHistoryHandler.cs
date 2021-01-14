@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using ACG.Common.Service;
 using ADAPT.JohnDeere.core.CQRS.Command;
 using ADAPT.JohnDeere.core.CQRS.Query;
 using ADAPT.JohnDeere.core.Dto.JohnDeereApiResponse;
 using ADAPT.JohnDeere.core.Service;
+using FIWARE;
+using FIWARE.ContextBroker.Enums;
+using FIWARE.ContextBroker.Helpers;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace ADAPT.JohnDeere.handlers.Handler.Command
 {
@@ -17,13 +22,18 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
         private readonly JohnDeereContext db;
         private readonly IJDApiClient jdApiClient;
         private readonly IMediator mediator;
+        private readonly IMainApiClient mainApiClient;
+        private readonly IConfiguration configuration;
 
-        public GetMachineLocationHistoryHandler(JohnDeereContext db, IMediator mediator, IJDApiClient jdApiClient)
+        public GetMachineLocationHistoryHandler(JohnDeereContext db, IMediator mediator, IJDApiClient jdApiClient, IMainApiClient mainApiClient, IConfiguration configuration)
         {
             this.db = db;
             this.jdApiClient = jdApiClient;
             this.mediator = mediator;
+            this.mainApiClient = mainApiClient;
+            this.configuration = configuration;
         }
+        
         public async Task<List<ReportedLocation>> Handle(GetMachineLocationHistory request, CancellationToken cancellationToken)
         {
             var accessToken = await mediator.Send(new GetUserToken() { UserId = request.UserId });
@@ -51,6 +61,42 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
                 startDate = endDate.AddSeconds(1);
             }
             while (endDate.Month < currentTime.Month);
+
+            var cbConfig = configuration.GetSection("contextBroker");
+            var cbUrl = cbConfig.GetValue<string>("cbUrl");
+            var cbService = cbConfig.GetValue<string>("cbService");
+            var cbServicePath = cbConfig.GetValue<string>("cbServicePath");
+            var contextBrokerNotificationEndpoint = cbConfig.GetValue<string>("machineNoditiciationCB");
+
+            var cbClient = new ContextBrokerClient(cbService, cbServicePath, cbUrl);
+            foreach (var location in locations)
+            {
+                await cbClient.UpdateEntity<object>(machine.Id.ToString(), new {
+                    Position = new {
+                        type = "Point",
+                        coordinates = new double[]{ location.Point.Lat, location.Point.Lon}
+                    },
+                    PTime = location.EventTimestamp
+                }, "tractor", AttributesFormatEnum.keyValues);
+                // await mainApiClient.Post<object>("machines/notification", new
+                // {
+                //     Data = new[]
+                //     {
+                //         new {
+                //             Id = machine.Id,
+                //             Position = new
+                //             {
+                //                 Type = "Point",
+                //                 Coordinates = new double[] { location.Point.Lat, location.Point.Lon }
+                //             },
+                //             PTime = location.EventTimestamp
+                //         }
+                //     }
+                // });
+            }
+            
+            machine.SyncTime = DateTime.UtcNow;
+            await db.SaveChangesAsync();
             return locations;
         }
     }

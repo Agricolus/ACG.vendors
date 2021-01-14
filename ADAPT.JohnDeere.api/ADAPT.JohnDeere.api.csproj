@@ -3,6 +3,7 @@
 		<TargetFramework>netcoreapp3.1</TargetFramework>
 	</PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="AgGatewayADAPTFramework" Version="2.1.0" />
 		<PackageReference Include="MediatR" Version="9.0.0" />
 		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
 		<PackageReference Include="Microsoft.CodeAnalysis" Version="3.8.0" />

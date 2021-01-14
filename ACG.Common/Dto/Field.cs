@@ -11,8 +11,9 @@ namespace ACG.Common.Dto
         public string Name { get; set; }
         public double Area { get; set; }
         public string ClientId { get; set; }
-        public double[][][][] Boundaries { get; set; }
-        public double[][][][] UnpassableBoundaries { get; set; }
+        public double[][][] Boundaries { get; set; }
+        public double[][][] UnpassableBoundaries { get; set; }
+        public DateTime ModificationTime { get; set; }
         public bool IsRegistered { get; set; }
     }
 }

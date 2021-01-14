@@ -6,6 +6,8 @@ namespace ADAPT.JohnDeere.core.CQRS.Command
 {
     public class RegisterOrganizationField : IRequest<Field>
     {
-        public Dto.JohnDeereApiResponse.Field Field { get; set; }
+
+        public string UserId { get; set; }
+        public Field Field { get; set; }
     }
 }

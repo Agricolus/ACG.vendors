@@ -8,7 +8,7 @@ namespace ADAPT.JohnDeere.handlers
     public class PostgresContext : JohnDeereContext
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-               => optionsBuilder.UseNpgsql("Host=192.168.1.181;Database=ACGVendors;Username=postgres;Password=postgres");
+               => optionsBuilder.UseNpgsql("Host=dockerdev.agricolus.com;Port=5433;Database=ACGVendors;Username=postgres;Password=postgres");
     }
 
     public class JohnDeereContext : DbContext

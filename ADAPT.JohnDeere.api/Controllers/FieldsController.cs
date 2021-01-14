@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using ACG.Common.Dto;
 using ADAPT.JohnDeere.core.CQRS.Command;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -29,9 +30,9 @@ namespace ADAPT.JohnDeere.api.Controllers
 
 
         [HttpPost("{userId}")]
-        public async Task<IActionResult> RegisterFieldsAndClient([FromBody] core.Dto.JohnDeereApiResponse.Field field, string userId)
+        public async Task<IActionResult> RegisterFieldsAndClient([FromBody] Field field, string userId)
         {
-            var res = await mediator.Send(new RegisterOrganizationField() { Field = field });
+            var res = await mediator.Send(new RegisterOrganizationField() { Field = field, UserId = userId });
             return Ok(res);
         }
 

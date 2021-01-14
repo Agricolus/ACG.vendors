@@ -60,7 +60,6 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
 
             await db.SaveChangesAsync();
 
-
             return response;
         }
     }

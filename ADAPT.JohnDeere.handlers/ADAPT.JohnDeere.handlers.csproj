@@ -33,5 +33,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\ACG.Common\ACG.Common.csproj" />
 		<ProjectReference Include="..\ADAPT.JohnDeere.core\ADAPT.JohnDeere.core.csproj" />
+		<ProjectReference Include="..\FIWARE.ContextBroker\FIWARE.ContextBroker.csproj" />
 	</ItemGroup>
 </Project>
