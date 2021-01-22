@@ -35,7 +35,7 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
             {
                 var orgfileslink = org.Links.Where(l => l.Rel == "files").Select(l => l.Uri).FirstOrDefault();
                 if (orgfileslink == null) continue;
-                var orgfiles = await jdApiClient.Get<Response<DocumentFile>>($"{orgfileslink};count=100?fileType=4", accessToken.AccessToken);
+                var orgfiles = await jdApiClient.Get<Response<DocumentFile>>($"{orgfileslink};count=100?fileType=4&fileType=1", accessToken.AccessToken);
                 foreach (var file in orgfiles.Values)
                 {
                     documentsFiles.Add(file);

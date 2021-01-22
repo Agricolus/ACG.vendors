@@ -22,10 +22,11 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 using AgGateway.ADAPT.ADMPlugin.Json;
+using static GeoJSONPlugin.PluginProperties;
 
 namespace ADAPT.JohnDeere.handlers.Handler.Command
 {
-    public class GetADAPTDocumentHandler : IRequestHandler<GetADAPTDocument, IEnumerable<ApplicationDataModel>>
+    public class GetADAPTDocumentHandler : IRequestHandler<GetADAPTDocument, string>
     {
         private readonly PluginFactory pluginFactory;
 
@@ -51,7 +52,7 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
             this.jdApiClient = jdApiClient;
         }
 
-        public async Task<IEnumerable<ApplicationDataModel>> Handle(GetADAPTDocument request, CancellationToken cancellationToken)
+        public async Task<string> Handle(GetADAPTDocument request, CancellationToken cancellationToken)
         {
             var accessToken = await mediator.Send(new GetUserToken() { UserId = request.UserId });
             var fileDownloadUrl = request.DocumentFile.Links.Where(l => l.Rel == "download").Select(l => l.Uri).First();
@@ -72,24 +73,30 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
 
 
             // var fuffolo = JsonConvert.SerializeObject(dataModels);
-            var admplugin = new AgGateway.ADAPT.ADMPlugin.Plugin(AgGateway.ADAPT.ADMPlugin.SerializationVersionEnum.V1);
-            var admserializer = new AgGateway.ADAPT.ADMPlugin.Serializers.AdmSerializer(AgGateway.ADAPT.ADMPlugin.SerializationVersionEnum.V1);
+            var admplugin = new AgGateway.ADAPT.ADMPlugin.Plugin();
+            var admserializer = new AgGateway.ADAPT.ADMPlugin.Serializers.AdmSerializer();
+            var geojsonplugin = new GeoJSONPlugin.Plugin();
             // var fuffolo = admplugin.Export;
-
+            string jsonresponse = null;
             using (ZipArchive archive = ZipFile.OpenRead(downloadedFileName))
             {
                 archive.ExtractToDirectory(importDirectory);
                 if (plugin.IsDataCardSupported(importDirectory))
                 {
-                    dataModels = plugin.Import(importDirectory);
+                    var props = new Properties();
+                    props.SetProperty("Anonymise", false.ToString());
+                    props.SetProperty("ApplyingAnonymiseValuesPer", ApplyingAnonymiseValuesEnum.PerAdm.ToString());
+                    dataModels = plugin.Import(importDirectory, props);
                     var pluginisoxml = new AgGateway.ADAPT.ISOv4Plugin.Plugin();
-
-
                     for (int o = 0; o < dataModels.Count(); o++)
                     {
                         var dm = dataModels.ElementAt(o);
-                        pluginisoxml.Export(dm, exportDirectory, new Properties());
-                        AgGateway.ADAPT.ADMPlugin.Json.MyBaseJsonSerializer.Instance.Serialize<ApplicationDataModel>(dm, exportDirectory + "JSON");
+                        pluginisoxml.Export(dm, exportDirectory, props);
+                        admplugin.Export(dm, exportDirectory + "ADM", props);
+                        var dm2 = admplugin.Import(exportDirectory + "ADM");
+                        // props.SetProperty("MaximumMappingDepth", 0.ToString());
+                        geojsonplugin.Export(dm, exportDirectory + "GEOJSON", props);
+                        jsonresponse = await AgGateway.ADAPT.ADMPlugin.Json.MyBaseJsonSerializer.Instance.Serialize(dm2[0]);
                         var taskdataFile = File.OpenRead(Path.Combine(exportDirectory, "TASKDATA\\TASKDATA.XML"));
                         var sr = new StreamReader(taskdataFile);
                         var client = new WebClient();
@@ -106,12 +113,14 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
                 Directory.Delete(importDirectory, true);
             if (Directory.Exists(exportDirectory))
                 Directory.Delete(exportDirectory, true);
+            // if (Directory.Exists(exportDirectory + "ADM"))
+            //     Directory.Delete(exportDirectory + "ADM", true);
             if (File.Exists(downloadedFileName))
                 File.Delete(downloadedFileName);
 
 
 
-            return dataModels;
+            return jsonresponse;
         }
     }
 }
@@ -121,91 +130,80 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
 
 namespace AgGateway.ADAPT.ADMPlugin.Json
 {
-  public class MyBaseJsonSerializer : IBaseSerializer
-  {
-    private static MyBaseJsonSerializer _instance;
-
-    public static MyBaseJsonSerializer Instance
+    public class MyBaseJsonSerializer : IBaseSerializer
     {
-      get
-      {
-        if (_instance == null)
+        private static MyBaseJsonSerializer _instance;
+
+        public static MyBaseJsonSerializer Instance
         {
-          _instance = new MyBaseJsonSerializer();
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new MyBaseJsonSerializer();
+                }
+                return _instance;
+            }
         }
-        return _instance;
-      }
-    }
 
-    private readonly JsonSerializer _jsonSerializer;
+        private readonly JsonSerializer _jsonSerializer;
 
-    private MyBaseJsonSerializer()
-    {
-      _jsonSerializer = new JsonSerializer
-      {
-        NullValueHandling = NullValueHandling.Ignore,
-        DefaultValueHandling = DefaultValueHandling.Ignore,
-        TypeNameHandling = TypeNameHandling.All,
-        ContractResolver = new AdaptContractResolver(),
-        SerializationBinder = new InternalSerializationBinder()
-      };
-    }
-
-    public void Serialize<T>(T dataModel, string path)
-    {
-      var tempPath = Path.GetTempFileName();
-      try
-      {
-        using (var fileStream = File.Open(tempPath, FileMode.Create, FileAccess.ReadWrite))
-        using (var streamWriter = new StreamWriter(fileStream))
-        using (var textWriter = new JsonTextWriter(streamWriter) { Formatting = Formatting.Indented })
+        private MyBaseJsonSerializer()
         {
-          _jsonSerializer.Serialize(textWriter, dataModel);
+            _jsonSerializer = new JsonSerializer
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                DefaultValueHandling = DefaultValueHandling.Ignore,
+                TypeNameHandling = TypeNameHandling.None,
+                ContractResolver = new AdaptContractResolver(),
+                SerializationBinder = new InternalSerializationBinder(),
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                Formatting = Formatting.None
+            };
         }
-        ZipUtil.Zip(path, tempPath);
-      }
-      finally
-      {
-        try
+
+        public async Task<string> Serialize(AgGateway.ADAPT.ApplicationDataModel.ADM.ApplicationDataModel dataModel)
         {
-          File.Delete(tempPath);
+            try
+            {
+                using (var stream = new MemoryStream())
+                using (var reader = new StreamReader(stream))
+                using (var streamWriter = new StreamWriter(stream))
+                using (var textWriter = new JsonTextWriter(streamWriter))
+                {
+                    _jsonSerializer.Serialize(textWriter, dataModel);
+                    stream.Position = 0;
+                    return await reader.ReadToEndAsync();
+                }
+            }
+            finally
+            {
+            }
         }
-        catch { }
-      }
-    }
 
-    public T Deserialize<T>(string path)
-    {
-      var tempPath = Path.GetTempFileName();
-      try
-      {
-        ZipUtil.Unzip(path, tempPath);
-
-        using (var fileStream = File.Open(tempPath, FileMode.Open))
-        using (var streamReader = new StreamReader(fileStream))
-        using (var textReader = new InternalJsonTextReader(streamReader))
+        public T Deserialize<T>()
         {
-          return _jsonSerializer.Deserialize<T>(textReader);
+            throw new NotImplementedException();
         }
-      }
-      finally
-      {
-        try
+
+        public void SerializeWithLengthPrefix<T>(IEnumerable<T> content, string path) where T : new()
         {
-          File.Delete(tempPath);
+            throw new NotImplementedException();
         }
-        catch { }
-      }
-    }
 
-    public void SerializeWithLengthPrefix<T>(IEnumerable<T> content, string path) where T : new()
-    {
-      throw new NotImplementedException();
-    }
+        public IEnumerable<T> DeserializeWithLengthPrefix<T>(string path) where T : new()
+        {
+            throw new NotImplementedException();
+        }
 
-    public IEnumerable<T> DeserializeWithLengthPrefix<T>(string path) where T : new()
-    {
-      throw new NotImplementedException();
+        public void Serialize<T>(T content, string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public T Deserialize<T>(string path)
+        {
+            throw new NotImplementedException();
+        }
     }
-  }
 }
