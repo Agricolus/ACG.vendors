@@ -14,6 +14,9 @@ namespace ADAPT.JohnDeere.handlers.Model
         [StringLength(64)]
         public String ExternalId { get; set; }
 
+        [StringLength(32)]
+        public String VIN { get; set; }
+
         public int OrganizationId { get; set; }
 
         public DateTime? SyncTime { get; set; }

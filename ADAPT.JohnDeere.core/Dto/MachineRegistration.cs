@@ -10,5 +10,6 @@ namespace ADAPT.JohnDeere.core.Dto
         public int OrganizationId { get; set; }
         public DateTime? SyncTime { get; set; }
         public DateTime? RegistrationTime { get; set; }
+        public string VIN { get; set; }
     }
 }

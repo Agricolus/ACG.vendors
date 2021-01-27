@@ -60,7 +60,7 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
                 start = 0;
                 startDate = endDate.AddSeconds(1);
             }
-            while (endDate.Month < currentTime.Month);
+            while (endDate < currentTime);
 
             var cbConfig = configuration.GetSection("contextBroker");
             var cbUrl = cbConfig.GetValue<string>("cbUrl");
@@ -78,21 +78,6 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
                     },
                     PTime = location.EventTimestamp
                 }, "tractor", AttributesFormatEnum.keyValues);
-                // await mainApiClient.Post<object>("machines/notification", new
-                // {
-                //     Data = new[]
-                //     {
-                //         new {
-                //             Id = machine.Id,
-                //             Position = new
-                //             {
-                //                 Type = "Point",
-                //                 Coordinates = new double[] { location.Point.Lat, location.Point.Lon }
-                //             },
-                //             PTime = location.EventTimestamp
-                //         }
-                //     }
-                // });
             }
             
             machine.SyncTime = DateTime.UtcNow;

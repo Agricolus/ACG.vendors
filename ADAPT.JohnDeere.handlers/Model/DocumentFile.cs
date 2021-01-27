@@ -17,5 +17,13 @@ namespace ADAPT.JohnDeere.handlers.Model
         public int OrganizationId { get; set; }
 
         public bool Processed { get; set; }
+
+        [StringLength(32)]
+        public string SourceMachineSerial { get; set; }
+
+        public string DownloadUrl { get; set; }
+
+        public DateTime ModifiedTime { get; set; }
+        public DateTime? ProcessedTime { get; set; }
     }
 }

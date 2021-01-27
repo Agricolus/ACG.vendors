@@ -3,15 +3,17 @@ using System;
 using ADAPT.JohnDeere.handlers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ADAPT.JohnDeere.handlers.Migrations
 {
     [DbContext(typeof(PostgresContext))]
-    partial class PostgresContextModelSnapshot : ModelSnapshot
+    [Migration("20210122160412_add_vin_serial_number_to_machines")]
+    partial class add_vin_serial_number_to_machines
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,28 +51,15 @@ namespace ADAPT.JohnDeere.handlers.Migrations
                         .HasColumnType("uuid")
                         .HasDefaultValueSql("uuid_generate_v4()");
 
-                    b.Property<string>("DownloadUrl")
-                        .HasColumnType("text");
-
                     b.Property<string>("ExternalId")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
-
-                    b.Property<DateTime>("ModifiedTime")
-                        .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("OrganizationId")
                         .HasColumnType("integer");
 
                     b.Property<bool>("Processed")
                         .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("ProcessedTime")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("SourceMachineSerial")
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("text");

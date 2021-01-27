@@ -72,7 +72,8 @@ namespace ADAPT.JohnDeere.handlers.Handler.Command
                     {
                         ExternalId = machine.Id.ToString(),
                         OrganizationId = org.Id,
-                        UserId = request.UserId
+                        UserId = request.UserId,
+                        VIN = machine.Vin
                     });
                 }
             }

@@ -37,12 +37,12 @@ namespace ADAPT.JohnDeere.api.Controllers
         }
 
 
-        [HttpPost("{userId}/bulk")]
-        public async Task<IActionResult> RegisterBulkFieldsAndClient([FromBody] core.Dto.JohnDeereApiResponse.Field[] fields, string userId)
-        {
-            // var res = await mediator.Send(new RegisterOrganizationsFields() { UserId = userId, Fields = fields.ToList() });
-            // return Ok(res);
-            return Ok();
-        }
+        // [HttpPost("{userId}/bulk")]
+        // public async Task<IActionResult> RegisterBulkFieldsAndClient([FromBody] core.Dto.JohnDeereApiResponse.Field[] fields, string userId)
+        // {
+        //     // var res = await mediator.Send(new RegisterOrganizationsFields() { UserId = userId, Fields = fields.ToList() });
+        //     // return Ok(res);
+        //     return Ok();
+        // }
     }
 }

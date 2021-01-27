@@ -3,15 +3,17 @@ using System;
 using ADAPT.JohnDeere.handlers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace ADAPT.JohnDeere.handlers.Migrations
 {
     [DbContext(typeof(PostgresContext))]
-    partial class PostgresContextModelSnapshot : ModelSnapshot
+    [Migration("20210125120324_add_metadata_to_document")]
+    partial class add_metadata_to_document
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +67,7 @@ namespace ADAPT.JohnDeere.handlers.Migrations
                     b.Property<bool>("Processed")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime?>("ProcessedTime")
+                    b.Property<DateTime>("ProcessedTime")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("SourceMachineSerial")
