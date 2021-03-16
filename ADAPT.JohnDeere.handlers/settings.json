@@ -1,0 +1,11 @@
+{
+    "ADAPTappId": "<john deere adapt api id>",
+    "appId": "<john deere appid>",
+    "appSecret": "<john deere secret>",
+    "authUrl": "<john deere auth url>",
+    "accessTokenUrl": "<john deere token server url>",
+    "cbUrl": "<context broker url>",
+    "organizationAuthUrl": "<john deere organization auth url>",
+    "apiUrl": "<john deere api url>",
+    "iotAgentUrl": "<iso xml iot agent url>"
+}
